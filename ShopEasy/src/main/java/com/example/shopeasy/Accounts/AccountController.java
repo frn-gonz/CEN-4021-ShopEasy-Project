@@ -9,21 +9,21 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController {
 
     @Autowired
-    private AccountsRepository accountRepository;
+    private AccountsRepository AccountsRepository;
 
     @GetMapping
     public List<Account> getAllAccounts() {
-        return accountRepository.findAll();
+        return AccountsRepository.findAll();
     }
 
     @GetMapping("/{id}")
     public Optional<Account> getAccountById(@PathVariable Integer id) {
-        return accountRepository.findById(id);
+        return AccountsRepository.findById(id);
     }
 
     @PostMapping
     public Account createAccount(@RequestBody Account account) {
-        return accountRepository.save(account);
+        return AccountsRepository.save(account);
     }
 
     @PutMapping("/{id}")
@@ -32,11 +32,11 @@ public class AccountController {
             @RequestBody Account updatedAccount) {
 
         updatedAccount.setAccountId(id);
-        return accountRepository.save(updatedAccount);
+        return AccountsRepository.save(updatedAccount);
     }
 
     @DeleteMapping("/{id}")
     public void deleteAccount(@PathVariable Integer id) {
-        accountRepository.deleteById(id);
+        AccountsRepository.deleteById(id);
     }
 }
