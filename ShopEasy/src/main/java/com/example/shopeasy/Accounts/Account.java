@@ -38,4 +38,10 @@ public class Account {
     public Account() {
     }
 
+    public void setAccountId(Integer id) {
+        this.accountId = id;
+    }
+    public Integer getAccountId() {
+        return accountId;
+    }
 }
