@@ -1,7 +1,6 @@
-package UserInterface;
+package com.example.shopeasy.Login;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class Login {
     public static void main(String[] args){

@@ -1,13 +1,17 @@
-package UserInterface;
+package com.example.shopeasy.Login;
+
+import com.example.shopeasy.Accounts.AccountsRepository;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class SignUp {
-    public static void main(String[] args){
+    private final AccountsRepository accountsRepository;
+
+    public SignUp(AccountsRepository accountsRepository) {
+        this.accountsRepository = accountsRepository;
         JFrame signup = new JFrame("Sign Up for ShopEasy");
         signup.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        signup.setSize(800,600);
+        signup.setSize(800, 600);
         signup.setTitle("Sign Up for ShopEasy");
         signup.setLocationRelativeTo(null);
         signup.setLayout(null);

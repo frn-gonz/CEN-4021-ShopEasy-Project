@@ -35,6 +35,7 @@ public class AccountController {
         return AccountsRepository.save(updatedAccount);
     }
 
+
     @DeleteMapping("/{id}")
     public void deleteAccount(@PathVariable Integer id) {
         AccountsRepository.deleteById(id);
