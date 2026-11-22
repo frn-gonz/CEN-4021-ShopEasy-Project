@@ -1,4 +1,5 @@
 package com.example.shopeasy.Accounts;
+import com.example.shopeasy.DiscountsAndPromo.DiscountCode;
 import com.example.shopeasy.DiscountsAndPromo.DiscountsRepository;
 import com.example.shopeasy.ProductAndInventory.ProductsRepository;
 
@@ -52,6 +53,40 @@ public class EmployeePage {
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.add(manageInventory);
         buttonsPanel.add(returnHome);
+
+        createPromoCode.addActionListener(e -> {
+            try {
+                String code = promoCodeText.getText().trim();
+
+                BigDecimal discountRate = new BigDecimal(discountNumText.getText().trim());
+
+                LocalDate expirationDate = LocalDate.parse(expiryDateText.getText().trim());
+
+                if(code.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Please Enter Promo Code");
+                    return;
+                }
+
+                if(discountRate.compareTo(BigDecimal.ZERO) <= 0 || discountRate.compareTo(BigDecimal.ZERO) >= 1) {
+                    JOptionPane.showMessageDialog(null, "Discount Rate must be greater than 0 and less than 1");
+                    return;
+                }
+
+                DiscountCode discountCode = new DiscountCode();
+                discountCode.setCodeName(code);
+                discountCode.setDiscount(discountRate);
+                discountCode.setExpirationDate(expirationDate);
+                discountsRepository.save(discountCode);
+                JOptionPane.showMessageDialog(null, "Promo Code created");
+
+                promoCodeText.setText("");
+                discountNumText.setText("");
+                expiryDateText.setText("");
+            } catch (Exception exception) {
+                JOptionPane.showMessageDialog(frame, "Invalid Promo Code. Please try again with the correct format.\n Date format YYYY-MM-DD\n" +
+                        "Discount rate format: 0.00");
+            }
+        });
 
         panel.add(Box.createVerticalGlue());
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
