@@ -1,79 +1,123 @@
 package com.example.shopeasy.UserInterface;
+
+import com.example.shopeasy.Accounts.Session;
+import com.example.shopeasy.Services.CartLine;
+import com.example.shopeasy.Services.CartService;
+import com.example.shopeasy.Services.ShopEasyException;
+
 import javax.swing.*;
-import java.awt.Image;
+import java.awt.Dimension;
+import java.util.List;
 
 public class ShoppingCart {
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Shopping Cart");
+
+    // Tall enough for about five items; a longer cart scrolls inside this area
+    private static final int MAX_ITEMS_HEIGHT = 320;
+
+    private final CartService cartService;
+    private final Integer accountId;
+    private final JFrame frame;
+    private final JLabel total;
+    private final JPanel itemsPanel;
+    private final JScrollPane itemsScroll;
+
+    public ShoppingCart(Navigator navigator, CartService cartService, Session session) {
+        this.cartService = cartService;
+        this.accountId = session.getCurrentAccount().getAccountId();
+
+        frame = new JFrame("Shopping Cart");
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         frame.add(panel);
 
-        /*
-        This section of code is commented as it relies on images being loaded. This can be uncommented once images are loaded from database
-        Two lines of code in the panel.add() section of code are commented for the same reason, and can be uncommented.
-
-        ImageIcon itemimage1 = new ImageIcon(Notifications.class.getResource("/pants.jpg")); //Placeholder: image should be taken from database
-        Image imageresize1 = itemimage1.getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH);
-        ImageIcon resizeditem1 = new ImageIcon(imageresize1);
-
-        ImageIcon itemimage2 = new ImageIcon(Notifications.class.getResource("/shirt.jpg")); //Placeholder: image should be taken from database
-        Image imageresize2 = itemimage2.getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH);
-        ImageIcon resizeditem2 = new ImageIcon(imageresize2); 
-
-        JLabel item2 = new JLabel(resizeditem2);
-        item2.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-
-        JLabel item1 = new JLabel(resizeditem1);
-        item1.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-        */ 
-
         JLabel title = new JLabel("Shopping Cart");
         title.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
-        JLabel item1info = new JLabel("Item: Jeans | Qty: 1 | Price: $39.99"); //Placeholder: should get item info from database
-        item1info.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-
-        JLabel item2info = new JLabel("Item: Black Tee | Qty: 1 | Price: $19.99"); //Placeholder: should get item info from database
-        item2info.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-
-        JLabel total = new JLabel("Total: $59.98"); //Placeholder: should calculate total and display it here
+        total = new JLabel(); // filled in by showItems()
         total.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
-        JButton remove1 = new JButton("Remove from Cart");
-        remove1.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-
-        JButton remove2 = new JButton("Remove from Cart");
-        remove2.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        // Holds an "Item | Qty | Price" line and a Remove button for each item in the cart
+        itemsPanel = new JPanel();
+        itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.Y_AXIS));
+        itemsScroll = new JScrollPane(itemsPanel);
+        itemsScroll.setBorder(BorderFactory.createEmptyBorder());
+        itemsScroll.getVerticalScrollBar().setUnitIncrement(16);
+        itemsScroll.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
         JButton proceed = new JButton("Proceed to Checkout");
         proceed.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        proceed.addActionListener(e -> {
+            if (cartService.getItems(accountId).isEmpty()) {
+                JOptionPane.showMessageDialog(frame, ShopEasyException.EMPTY_CART,
+                        "Shopping Cart", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            frame.dispose(); // Checkout's "Return to Shopping Cart" opens a fresh cart window
+            navigator.openCheckout();
+        });
 
         JButton home = new JButton("Return to Home");
         home.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        home.addActionListener(e -> frame.dispose()); // Home is still open behind this window
 
         panel.add(Box.createVerticalGlue());
         panel.add(title);
         panel.add(Box.createVerticalStrut(10));
         panel.add(total);
         panel.add(Box.createVerticalStrut(30));
-        //panel.add(item1);
-        panel.add(item1info);
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(remove1);
-        panel.add(Box.createVerticalStrut(15));
-        //panel.add(item2);
-        panel.add(item2info);
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(remove2);
+        panel.add(itemsScroll);
         panel.add(Box.createVerticalStrut(25));
         panel.add(proceed);
         panel.add(Box.createVerticalStrut(10));
         panel.add(home);
         panel.add(Box.createVerticalGlue());
 
-        frame.setSize(750, 500);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        showItems();
+
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
+    }
+
+    // Reloads the cart from the database, then rebuilds the item list and the subtotal
+    private void showItems() {
+        List<CartLine> items = cartService.getItems(accountId);
+        itemsPanel.removeAll();
+
+        if (items.isEmpty()) {
+            JLabel empty = new JLabel(ShopEasyException.EMPTY_CART);
+            empty.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+            itemsPanel.add(empty);
+        }
+
+        for (CartLine item : items) {
+            JLabel iteminfo = new JLabel("Item: " + item.productName() + " | Qty: " + item.quantity()
+                    + " | Price: " + MoneyFormat.format(item.price()) + " each");
+            iteminfo.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+
+            JButton remove = new JButton("Remove from Cart");
+            remove.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+            remove.addActionListener(e -> {
+                cartService.removeItem(accountId, item.cartItemId());
+                showItems();
+            });
+
+            itemsPanel.add(iteminfo);
+            itemsPanel.add(Box.createVerticalStrut(5));
+            itemsPanel.add(remove);
+            itemsPanel.add(Box.createVerticalStrut(15));
+        }
+
+        total.setText("Subtotal: " + MoneyFormat.format(cartService.calculateSubtotal(items)));
+
+        // The item area grows with the cart up to MAX_ITEMS_HEIGHT, then scrolls
+        int height = Math.min(itemsPanel.getPreferredSize().height, MAX_ITEMS_HEIGHT);
+        Dimension size = new Dimension(700, height);
+        itemsScroll.setPreferredSize(size);
+        itemsScroll.setMaximumSize(size);
+
+        frame.revalidate();
+        frame.repaint();
     }
 }

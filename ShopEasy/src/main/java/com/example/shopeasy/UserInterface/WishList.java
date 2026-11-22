@@ -3,7 +3,7 @@ import javax.swing.*;
 import java.awt.Image;
 
 public class WishList {
-    public static void main(String[] args) {
+    public WishList() {
         JFrame frame = new JFrame("Wish List");
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -51,6 +51,7 @@ public class WishList {
 
         JButton home = new JButton("Return to Home");
         home.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        home.addActionListener(e -> frame.dispose()); // Home is still open behind this window
 
         panel.add(Box.createVerticalGlue());
         panel.add(title);
@@ -72,8 +73,9 @@ public class WishList {
         panel.add(home);
         panel.add(Box.createVerticalGlue());
 
-        frame.setSize(750, 500);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
     }
 }

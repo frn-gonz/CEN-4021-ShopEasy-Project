@@ -1,7 +1,11 @@
+package com.example.shopeasy.UserInterface;
+
+import com.example.shopeasy.Accounts.Session;
+
 import javax.swing.*;
 
 public class Home {
-    public static void main(String[] args) {
+    public Home(Navigator navigator, Session session) {
         JFrame frame = new JFrame("Home Page");
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -28,12 +32,28 @@ public class Home {
         JButton emp = new JButton("Go to Employee View");
         emp.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
-        JLabel empfield = new JLabel("Enter Employee ID:");
-        empfield.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        JLabel emplabel = new JLabel("Enter Employee ID:");
+        emplabel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
         JTextField empfield = new JTextField();
         empfield.setMaximumSize(new java.awt.Dimension(200, 60));
         empfield.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+
+        JButton logout = new JButton("Logout");
+        logout.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+
+        // Each screen opens in its own window on top of Home; Home stays open behind it
+        acc.addActionListener(e -> navigator.openAccount());
+        inv.addActionListener(e -> navigator.openInventory());
+        shop.addActionListener(e -> navigator.openShoppingCart());
+        wish.addActionListener(e -> navigator.openWishList());
+        noti.addActionListener(e -> showComingSoon(frame, "Notifications"));
+        emp.addActionListener(e -> showComingSoon(frame, "Employee View"));
+
+        logout.addActionListener(e -> {
+            session.logout();
+            navigator.openLogin(); // also closes Home and any other open screens
+        });
 
         panel.add(Box.createVerticalGlue());
         panel.add(title);
@@ -48,14 +68,22 @@ public class Home {
         panel.add(Box.createVerticalStrut(15));
         panel.add(noti);
         panel.add(Box.createVerticalStrut(15));
-        panel.add(empfield);
+        panel.add(emplabel);
         panel.add(empfield);
         panel.add(Box.createVerticalStrut(5));
         panel.add(emp);
+        panel.add(Box.createVerticalStrut(25));
+        panel.add(logout);
         panel.add(Box.createVerticalGlue());
 
-        frame.setSize(600, 400);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // main window: closing it quits the app
         frame.setVisible(true);
+    }
+
+    // For buttons whose screens haven't been built yet
+    private static void showComingSoon(JFrame frame, String feature) {
+        JOptionPane.showMessageDialog(frame, "Coming soon!", feature, JOptionPane.INFORMATION_MESSAGE);
     }
 }

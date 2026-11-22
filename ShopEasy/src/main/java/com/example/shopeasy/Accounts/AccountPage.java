@@ -53,6 +53,7 @@ public class AccountPage {
 
         JButton back = new JButton("Return to Home");
         back.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        back.addActionListener(e -> frame.dispose()); // Home is still open behind this window
 
         updatepay.addActionListener(e -> {
             String newpay = paynew.getText().trim();
@@ -103,8 +104,9 @@ public class AccountPage {
         panel.add(back);
         panel.add(Box.createVerticalGlue());
 
-        frame.setSize(600, 400);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
     }
 }

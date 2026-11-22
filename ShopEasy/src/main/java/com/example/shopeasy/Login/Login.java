@@ -2,6 +2,7 @@ package com.example.shopeasy.Login;
 
 import com.example.shopeasy.Accounts.Account;
 import com.example.shopeasy.Accounts.AccountsRepository;
+import com.example.shopeasy.UserInterface.Navigator;
 import javax.swing.*;
 import java.util.Optional;
 
@@ -53,19 +54,19 @@ public class Login {
             Optional<Account> optionalAccount = accountsRepository.findByUsername(usernameIn);
 
             if(optionalAccount.isEmpty()) {
-                JOptionPane.showMessageDialog(frame, "Invalid username or password");
+                JOptionPane.showMessageDialog(frame, "Invalid username or password (Error 111)");
                 return;
             }
 
             Account account = optionalAccount.get();
             if(!passwordIn.equals(account.getPassword())) {
-                JOptionPane.showMessageDialog(frame, "Password does not match");
+                JOptionPane.showMessageDialog(frame, "Invalid username or password (Error 111)");
                 return;
             }
 
             JOptionPane.showMessageDialog(frame, "Login successful. Welcome!");
 
-            frame.dispose();
+            Navigator.get().logIn(account); // saves the account in the Session, closes Login, opens Home
 
         });
 
