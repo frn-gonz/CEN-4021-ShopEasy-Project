@@ -5,6 +5,7 @@ import com.example.shopeasy.Accounts.Session;
 import com.example.shopeasy.Login.SignUp;
 import com.example.shopeasy.ProductAndInventory.Inventory;
 import com.example.shopeasy.ProductAndInventory.ProductsRepository;
+import com.example.shopeasy.Services.CartService;
 import org.springframework.stereotype.Component;
 
 import javax.swing.JFrame;
@@ -24,12 +25,14 @@ public class Navigator {
     private final AccountsRepository accountsRepository;
     private final ProductsRepository productsRepository;
     private final Session session;
+    private final CartService cartService;
 
     public Navigator(AccountsRepository accountsRepository, ProductsRepository productsRepository,
-                     Session session) {
+                     Session session, CartService cartService) {
         this.accountsRepository = accountsRepository;
         this.productsRepository = productsRepository;
         this.session = session;
+        this.cartService = cartService;
     }
 
     // Login and Home are the two main windows. Opening one closes everything else:
@@ -53,7 +56,7 @@ public class Navigator {
     }
 
     public void openShoppingCart() {
-        new ShoppingCart();
+        new ShoppingCart(this, cartService, session);
     }
 
     public void openCheckout() {
