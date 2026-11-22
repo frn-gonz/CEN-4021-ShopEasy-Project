@@ -1,3 +1,5 @@
+package com.example.shopeasy.UserInterface;
+
 import javax.swing.*;
 
 public class Home {
@@ -28,8 +30,8 @@ public class Home {
         JButton emp = new JButton("Go to Employee View");
         emp.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
-        JLabel empfield = new JLabel("Enter Employee ID:");
-        empfield.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        JLabel emplabel = new JLabel("Enter Employee ID:");
+        emplabel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
         JTextField empfield = new JTextField();
         empfield.setMaximumSize(new java.awt.Dimension(200, 60));
@@ -48,7 +50,7 @@ public class Home {
         panel.add(Box.createVerticalStrut(15));
         panel.add(noti);
         panel.add(Box.createVerticalStrut(15));
-        panel.add(empfield);
+        panel.add(emplabel);
         panel.add(empfield);
         panel.add(Box.createVerticalStrut(5));
         panel.add(emp);
