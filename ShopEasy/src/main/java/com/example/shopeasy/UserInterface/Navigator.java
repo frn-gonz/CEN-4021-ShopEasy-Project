@@ -10,6 +10,7 @@ import com.example.shopeasy.ProductAndInventory.ProductsRepository;
 import com.example.shopeasy.Services.CartService;
 import com.example.shopeasy.Services.CheckoutService;
 import com.example.shopeasy.Services.OrderReceipt;
+import com.example.shopeasy.Services.WishlistService;
 import org.springframework.stereotype.Component;
 
 import javax.swing.JFrame;
@@ -36,14 +37,17 @@ public class Navigator {
     private final Session session;
     private final CartService cartService;
     private final CheckoutService checkoutService;
+    private final WishlistService wishlistService;
 
     public Navigator(AccountsRepository accountsRepository, ProductsRepository productsRepository,
-                     Session session, CartService cartService, CheckoutService checkoutService) {
+                     Session session, CartService cartService, CheckoutService checkoutService,
+                     WishlistService wishlistService) {
         this.accountsRepository = accountsRepository;
         this.productsRepository = productsRepository;
         this.session = session;
         this.cartService = cartService;
         this.checkoutService = checkoutService;
+        this.wishlistService = wishlistService;
         instance = this;
     }
 
@@ -87,7 +91,7 @@ public class Navigator {
     }
 
     public void openWishList() {
-        new WishList();
+        new WishList(this, wishlistService, session);
     }
 
     public void openAccount() {

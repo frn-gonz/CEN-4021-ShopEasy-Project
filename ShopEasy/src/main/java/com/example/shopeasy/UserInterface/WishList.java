@@ -1,53 +1,44 @@
 package com.example.shopeasy.UserInterface;
+
+import com.example.shopeasy.Accounts.Session;
+import com.example.shopeasy.Services.ShopEasyException;
+import com.example.shopeasy.Services.WishlistLine;
+import com.example.shopeasy.Services.WishlistService;
+
 import javax.swing.*;
-import java.awt.Image;
+import java.awt.Dimension;
+import java.util.List;
 
 public class WishList {
-    public WishList() {
-        JFrame frame = new JFrame("Wish List");
+
+    // Tall enough for about four items; a longer wish list scrolls inside this area
+    private static final int MAX_ITEMS_HEIGHT = 320;
+
+    private final WishlistService wishlistService;
+    private final Integer accountId;
+    private final JFrame frame;
+    private final JPanel itemsPanel;
+    private final JScrollPane itemsScroll;
+
+    public WishList(Navigator navigator, WishlistService wishlistService, Session session) {
+        this.wishlistService = wishlistService;
+        this.accountId = session.getCurrentAccount().getAccountId();
+
+        frame = new JFrame("Wish List");
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         frame.add(panel);
 
-        /*
-        This section of code is commented as it relies on images being loaded. This can be uncommented once images are loaded from database
-        Two lines of code in the panel.add() section of code are commented for the same reason, and can be uncommented.
-
-        ImageIcon itemimage1 = new ImageIcon(Notifications.class.getResource("/pants.jpg")); //Placeholder: image should be taken from database
-        Image imageresize1 = itemimage1.getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH);
-        ImageIcon resizeditem1 = new ImageIcon(imageresize1);
-
-        ImageIcon itemimage2 = new ImageIcon(Notifications.class.getResource("/shirt.jpg")); //Placeholder: image should be taken from database
-        Image imageresize2 = itemimage2.getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH);
-        ImageIcon resizeditem2 = new ImageIcon(imageresize2); 
-
-        JLabel item2 = new JLabel(resizeditem2);
-        item2.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-
-        JLabel item1 = new JLabel(resizeditem1);
-        item1.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-        */ 
-
         JLabel title = new JLabel("Wish List");
         title.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
-        JLabel item1info = new JLabel("Item: Jeans | Qty: 1 | Price: $39.99"); //Placeholder: should get item info from database
-        item1info.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-
-        JLabel item2info = new JLabel("Item: Black Tee | Qty: 1 | Price: $19.99"); //Placeholder: should get item info from database
-        item2info.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-
-        JButton cart1 = new JButton("Add to Cart");
-        cart1.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-
-        JButton cart2 = new JButton("Add to Cart");
-        cart2.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-
-        JButton remove1 = new JButton("Remove from Wish List");
-        remove1.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-
-        JButton remove2 = new JButton("Remove from Wish List");
-        remove2.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        // Holds an "Item | Price" line with Add to Cart and Remove buttons for each item
+        itemsPanel = new JPanel();
+        itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.Y_AXIS));
+        itemsScroll = new JScrollPane(itemsPanel);
+        itemsScroll.setBorder(BorderFactory.createEmptyBorder());
+        itemsScroll.getVerticalScrollBar().setUnitIncrement(16);
+        itemsScroll.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
         JButton home = new JButton("Return to Home");
         home.setAlignmentX(JComponent.CENTER_ALIGNMENT);
@@ -56,26 +47,70 @@ public class WishList {
         panel.add(Box.createVerticalGlue());
         panel.add(title);
         panel.add(Box.createVerticalStrut(30));
-        //panel.add(item1);
-        panel.add(item1info);
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(cart1);
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(remove1);
-        panel.add(Box.createVerticalStrut(15));
-        //panel.add(item2);
-        panel.add(item2info);
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(cart2);
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(remove2);
+        panel.add(itemsScroll);
         panel.add(Box.createVerticalStrut(25));
         panel.add(home);
         panel.add(Box.createVerticalGlue());
+
+        showItems();
 
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
+    }
+
+    // Reloads the wish list from the database and rebuilds the item list
+    private void showItems() {
+        List<WishlistLine> items = wishlistService.getItems(accountId);
+        itemsPanel.removeAll();
+
+        if (items.isEmpty()) {
+            JLabel empty = new JLabel("Your wish list is empty");
+            empty.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+            itemsPanel.add(empty);
+        }
+
+        for (WishlistLine item : items) {
+            JLabel iteminfo = new JLabel("Item: " + item.productName()
+                    + " | Price: " + MoneyFormat.format(item.price()));
+            iteminfo.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+
+            JButton cart = new JButton("Add to Cart");
+            cart.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+            cart.addActionListener(e -> {
+                try {
+                    // Adds one to the cart and takes it off the wish list (Error 321 if out of stock)
+                    wishlistService.moveToCart(accountId, item.wishlistItemId());
+                    JOptionPane.showMessageDialog(frame, item.productName() + " was moved to your cart.");
+                } catch (ShopEasyException ex) {
+                    JOptionPane.showMessageDialog(frame, ex.getMessage(), "Wish List", JOptionPane.ERROR_MESSAGE);
+                }
+                showItems();
+            });
+
+            JButton remove = new JButton("Remove from Wish List");
+            remove.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+            remove.addActionListener(e -> {
+                wishlistService.removeItem(accountId, item.wishlistItemId());
+                showItems();
+            });
+
+            itemsPanel.add(iteminfo);
+            itemsPanel.add(Box.createVerticalStrut(5));
+            itemsPanel.add(cart);
+            itemsPanel.add(Box.createVerticalStrut(5));
+            itemsPanel.add(remove);
+            itemsPanel.add(Box.createVerticalStrut(15));
+        }
+
+        // The item area grows with the list up to MAX_ITEMS_HEIGHT, then scrolls
+        int height = Math.min(itemsPanel.getPreferredSize().height, MAX_ITEMS_HEIGHT);
+        Dimension size = new Dimension(700, height);
+        itemsScroll.setPreferredSize(size);
+        itemsScroll.setMaximumSize(size);
+
+        frame.revalidate();
+        frame.repaint();
     }
 }
