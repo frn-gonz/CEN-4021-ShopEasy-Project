@@ -1,5 +1,7 @@
 package com.example.shopeasy.RecommendationsAndNotifications;
+import com.example.shopeasy.Accounts.Session;
 import com.example.shopeasy.ProductAndInventory.Product;
+import com.example.shopeasy.Services.CartService;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,6 +29,28 @@ public class Notifications {
         }
 
         JButton cartButton = new JButton("Add to Cart");
+        cartButton.addActionListener(e -> {
+
+            try {
+                CartService cartService = null;
+                Session session = null;
+                cartService.addItem(
+                        session.getCurrentAccount().getAccountId(),
+                        product.getProductId(),
+                        1);
+
+                JOptionPane.showMessageDialog(
+                        null,
+                        product.getProductName()
+                                + " added to cart.");
+
+            } catch (Exception ex) {
+
+                JOptionPane.showMessageDialog(
+                        null,
+                        ex.getMessage());
+            }
+        });
 
         JButton wishlistButton = new JButton("Add to Wishlist");
 
@@ -48,7 +72,7 @@ public class Notifications {
         return panel;
 
     }
-    public Notifications(List<Product> recommendedProducts) {
+    public Notifications(List<Product> recommendedProducts, CartService cartService, Session session) {
         JFrame frame = new JFrame("Notifications");
 
 
@@ -69,11 +93,14 @@ public class Notifications {
 
         JButton home = new JButton("Return to Home");
         home.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        home.addActionListener(e -> frame.dispose());
 
         panel.add(Box.createVerticalGlue());
         panel.add(title);
         panel.add(Box.createVerticalStrut(10));
         panel.add(msg);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(home);
         panel.add(Box.createVerticalStrut(30));
 
         for(Product product : recommendedProducts) {

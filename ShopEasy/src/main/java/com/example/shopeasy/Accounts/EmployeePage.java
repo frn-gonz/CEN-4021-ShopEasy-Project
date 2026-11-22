@@ -122,6 +122,8 @@ public class EmployeePage {
             emailText.setText("");
         });
 
+        returnHome.addActionListener(e -> frame.dispose());
+
         panel.add(Box.createVerticalGlue());
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(title);

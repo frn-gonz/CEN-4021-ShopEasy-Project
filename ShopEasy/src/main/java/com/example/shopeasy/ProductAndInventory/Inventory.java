@@ -142,6 +142,7 @@ public class Inventory {
 
         JButton home = new JButton("Return to Home");
         home.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        home.addActionListener(e -> frame.dispose());
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(previouspage);

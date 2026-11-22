@@ -30,6 +30,10 @@ public class ForgotPassword {
         JButton resetButton = new JButton("Reset");
         resetButton.setBounds(200, 300, 100, 40);
 
+        JButton home = new JButton("Exit");
+        home.setBounds(350, 300, 100, 40);
+        home.addActionListener(e -> fPassword.dispose());
+
         resetButton.addActionListener(e -> {
             String email = emailBox.getText().trim();
             if(email.isEmpty()){
@@ -75,6 +79,7 @@ public class ForgotPassword {
         fPassword.add(emailLine);
         fPassword.add(emailBox);
         fPassword.add(resetButton);
+        fPassword.add(home);
         fPassword.setVisible(true);
 
 
