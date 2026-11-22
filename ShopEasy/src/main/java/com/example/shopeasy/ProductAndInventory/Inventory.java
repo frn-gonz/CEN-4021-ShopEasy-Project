@@ -4,9 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Inventory {
     private final ProductsRepository productsRepository;
+    // What the Add To Cart / Add To Wishlist buttons do for a product (the Navigator passes these in)
+    private final Consumer<Product> onAddToCart;
+    private final Consumer<Product> onAddToWishlist;
     private List<Product> products;
     private int pageNum = 0;
     private static final int Page_Products = 8;
@@ -41,9 +45,11 @@ public class Inventory {
 
         JButton addToCartButton = new JButton("Add To Cart");
         addToCartButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        addToCartButton.addActionListener(e -> onAddToCart.accept(product));
 
         JButton addToWishlistButton = new JButton("Add To Wishlist");
         addToWishlistButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        addToWishlistButton.addActionListener(e -> onAddToWishlist.accept(product));
 
         productPanel.add(addToCartButton);
         productPanel.add(Box.createVerticalStrut(5));
@@ -72,9 +78,12 @@ public class Inventory {
         panel.repaint();
     }
 
-    public Inventory(ProductsRepository productsRepository) {
+    public Inventory(ProductsRepository productsRepository, Consumer<Product> onAddToCart,
+                     Consumer<Product> onAddToWishlist) {
 
         this.productsRepository = productsRepository;
+        this.onAddToCart = onAddToCart;
+        this.onAddToWishlist = onAddToWishlist;
         this.products = productsRepository.findAll();
 
 

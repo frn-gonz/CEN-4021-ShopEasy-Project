@@ -6,14 +6,18 @@ import com.example.shopeasy.Accounts.AccountsRepository;
 import com.example.shopeasy.Accounts.Session;
 import com.example.shopeasy.Login.Login;
 import com.example.shopeasy.ProductAndInventory.Inventory;
+import com.example.shopeasy.ProductAndInventory.Product;
 import com.example.shopeasy.ProductAndInventory.ProductsRepository;
 import com.example.shopeasy.Services.CartService;
 import com.example.shopeasy.Services.CheckoutService;
 import com.example.shopeasy.Services.OrderReceipt;
+import com.example.shopeasy.Services.ShopEasyException;
 import com.example.shopeasy.Services.WishlistService;
 import org.springframework.stereotype.Component;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import java.awt.KeyboardFocusManager;
 import java.awt.Window;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -75,7 +79,29 @@ public class Navigator {
     }
 
     public void openInventory() {
-        openClosingOnlyItself(() -> new Inventory(productsRepository));
+        openClosingOnlyItself(() -> new Inventory(productsRepository, this::addToCart, this::addToWishlist));
+    }
+
+    // Inventory's "Add To Cart": adds one to the logged-in user's cart (Error 321 if out of stock)
+    private void addToCart(Product product) {
+        try {
+            cartService.addItem(session.getCurrentAccount().getAccountId(), product.getProductId(), 1);
+            JOptionPane.showMessageDialog(activeWindow(), product.getProductName() + " was added to your cart.");
+        } catch (ShopEasyException ex) {
+            JOptionPane.showMessageDialog(activeWindow(), ex.getMessage(), "Inventory", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // Inventory's "Add To Wishlist": adds the product unless it's already on the wish list
+    private void addToWishlist(Product product) {
+        boolean added = wishlistService.addItem(session.getCurrentAccount().getAccountId(), product.getProductId());
+        JOptionPane.showMessageDialog(activeWindow(), product.getProductName()
+                + (added ? " was added to your wish list." : " is already on your wish list."));
+    }
+
+    // The window the user clicked in, so messages appear on top of it
+    private Window activeWindow() {
+        return KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
     }
 
     public void openShoppingCart() {

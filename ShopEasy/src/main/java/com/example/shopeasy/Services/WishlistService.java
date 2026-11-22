@@ -62,19 +62,21 @@ public class WishlistService {
         return lines;
     }
 
-    // Ready for Inventory's "Add To Wishlist" button. A product already on the list isn't added twice.
+    // Used by Inventory's "Add To Wishlist" button. Returns false (and adds nothing) when the
+    // product is already on the list or doesn't exist, so the screen can say so.
     @Transactional
-    public void addItem(Integer accountId, Integer productId) {
+    public boolean addItem(Integer accountId, Integer productId) {
         Wishlist wishlist = findOrCreateWishlist(accountId);
         boolean alreadyThere = wishlistItemRepository.findByWishlistId(wishlist.getWishlistId()).stream()
                 .anyMatch(item -> productId.equals(item.getProductId()));
         if (alreadyThere || productsRepository.findById(productId).isEmpty()) {
-            return;
+            return false;
         }
         WishlistItem item = new WishlistItem();
         item.setWishlistId(wishlist.getWishlistId());
         item.setProductId(productId);
         wishlistItemRepository.save(item);
+        return true;
     }
 
     // Only removes the item if it belongs to this account's wish list
