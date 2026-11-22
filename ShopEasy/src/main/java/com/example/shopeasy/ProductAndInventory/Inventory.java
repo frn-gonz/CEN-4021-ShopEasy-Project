@@ -1,13 +1,47 @@
 package com.example.shopeasy.ProductAndInventory;
+
 import javax.swing.*;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 public class Inventory {
-    public static void main(String[] args) {
+    private final ProductsRepository ProductsRepository;
+
+    public Inventory(ProductsRepository ProductsRepository) {
+
+        this.ProductsRepository = ProductsRepository;
+
         JFrame frame = new JFrame("Product Inventory");
         JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setLayout(new GridLayout(0, 4, 10, 10));
         frame.add(panel);
 
+        List<Product> products = ProductsRepository.findAll();
+
+        for (Product product : products) {
+            JPanel productPanel = new JPanel();
+            productPanel.setLayout(new BoxLayout(productPanel, BoxLayout.Y_AXIS));
+
+            productPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+
+            if (product.getProductImage() != null) {
+                ImageIcon productImage = new ImageIcon(product.getProductImage());
+                Image scaledImage = productImage.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+
+                JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
+                imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                productPanel.add(imageLabel);
+            }
+
+            JLabel nameLabel = new JLabel(product.getProductName());
+            nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            productPanel.add(nameLabel);
+
+            JLabel priceLabel = new JLabel(String.valueOf(product.getPrice()));
+            priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            productPanel.add(priceLabel);
+        }
         /*
         This section of code is commented as it relies on images being loaded. This can be uncommented once images are loaded from database
         Two lines of code in the panel.add() section of code are commented for the same reason, and can be uncommented.
