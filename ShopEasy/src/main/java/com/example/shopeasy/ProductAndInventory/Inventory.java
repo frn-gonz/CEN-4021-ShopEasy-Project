@@ -6,128 +6,154 @@ import java.util.*;
 import java.util.List;
 
 public class Inventory {
-    private final ProductsRepository ProductsRepository;
+    private final ProductsRepository productsRepository;
+    private List<Product> products;
+    private int pageNum = 0;
+    private static final int Page_Products = 8;
 
-    public Inventory(ProductsRepository ProductsRepository) {
+    private JPanel productPanelMaker(Product product) {
+        JPanel productPanel = new JPanel();
+        productPanel.setLayout(new BoxLayout(productPanel, BoxLayout.Y_AXIS));
 
-        this.ProductsRepository = ProductsRepository;
+        productPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+
+        if (product.getProductImage() != null) {
+            ImageIcon productImage = new ImageIcon(product.getProductImage());
+            Image scaledImage = productImage.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+
+            JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
+            imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            productPanel.add(imageLabel);
+        }
+
+        JLabel nameLabel = new JLabel(product.getProductName());
+        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        productPanel.add(nameLabel);
+
+        JLabel priceLabel = new JLabel("$" + String.valueOf(product.getPrice()));
+        priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        productPanel.add(priceLabel);
+
+        JLabel quantityLabel = new JLabel("In Stock: " + String.valueOf(product.getQuantity()));
+        quantityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        productPanel.add(quantityLabel);
+        productPanel.add(Box.createVerticalStrut(5));
+
+        JButton addToCartButton = new JButton("Add To Cart");
+        addToCartButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JButton addToWishlistButton = new JButton("Add To Wishlist");
+        addToWishlistButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        productPanel.add(addToCartButton);
+        productPanel.add(Box.createVerticalStrut(5));
+        productPanel.add(addToWishlistButton);
+
+        return productPanel;
+
+    }
+    private void pageMaker(JPanel panel, List<Product> products) {
+        panel.removeAll();
+
+        if (products.isEmpty()) {
+            panel.add(new JLabel("No Products in Inventory"));
+            panel.revalidate();
+            panel.repaint();
+            return;
+        }
+
+        int pageStart = pageNum * Page_Products;
+        int pageEnd = Math.min(pageStart + Page_Products, products.size());
+
+        for (int i = pageStart; i < pageEnd; i++) {
+            panel.add(productPanelMaker(products.get(i)));
+        }
+        panel.revalidate();
+        panel.repaint();
+    }
+
+    public Inventory(ProductsRepository productsRepository) {
+
+        this.productsRepository = productsRepository;
+        this.products = productsRepository.findAll();
+
 
         JFrame frame = new JFrame("Product Inventory");
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(0, 4, 10, 10));
-        frame.add(panel);
+        frame.setLayout(new BorderLayout());
 
-        List<Product> products = ProductsRepository.findAll();
+        pageMaker(panel, products);
 
-        for (Product product : products) {
-            JPanel productPanel = new JPanel();
-            productPanel.setLayout(new BoxLayout(productPanel, BoxLayout.Y_AXIS));
+        JScrollPane scrollPane = new JScrollPane(panel);
+        frame.add(scrollPane, BorderLayout.CENTER);
 
-            productPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
-            if (product.getProductImage() != null) {
-                ImageIcon productImage = new ImageIcon(product.getProductImage());
-                Image scaledImage = productImage.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-
-                JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
-                imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                productPanel.add(imageLabel);
-            }
-
-            JLabel nameLabel = new JLabel(product.getProductName());
-            nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            productPanel.add(nameLabel);
-
-            JLabel priceLabel = new JLabel(String.valueOf(product.getPrice()));
-            priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            productPanel.add(priceLabel);
-        }
-        /*
-        This section of code is commented as it relies on images being loaded. This can be uncommented once images are loaded from database
-        Two lines of code in the panel.add() section of code are commented for the same reason, and can be uncommented.
-
-        ImageIcon itemimage1 = new ImageIcon(Notifications.class.getResource("/pants.jpg")); //Placeholder: image should be taken from database
-        Image imageresize1 = itemimage1.getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH);
-        ImageIcon resizeditem1 = new ImageIcon(imageresize1);
-
-        ImageIcon itemimage2 = new ImageIcon(Notifications.class.getResource("/shirt.jpg")); //Placeholder: image should be taken from database
-        Image imageresize2 = itemimage2.getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH);
-        ImageIcon resizeditem2 = new ImageIcon(imageresize2); 
-
-        JLabel item2 = new JLabel(resizeditem2);
-        item2.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-
-        JLabel item1 = new JLabel(resizeditem1);
-        item1.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-        */ 
-
-        JLabel title = new JLabel("Product Inventory");
-        title.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
         JLabel msg = new JLabel("Search:");
         msg.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
-        JTextField search = new JTextField();
-        search.setMaximumSize(new java.awt.Dimension(200, 60));
+        JTextField search = new JTextField(20);
         search.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
-        JLabel item1info = new JLabel("Item: Jeans | Qty: 1 | Price: $39.99"); //Placeholder: should get item info from database
-        item1info.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        JButton searchButton = new JButton("Search");
+        searchButton.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        searchButton.addActionListener(e -> {
+            String searchText = search.getText();
+            if (searchText.isEmpty()) {
+                products = productsRepository.findAll();
+            }
+            else {
+                products = productsRepository.findByProductNameContainingIgnoreCase(searchText);
+            }
 
-        JLabel item2info = new JLabel("Item: Black Tee | Qty: 1 | Price: $19.99"); //Placeholder: should get item info from database
-        item2info.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+            panel.removeAll();
+            pageNum = 0;
+            pageMaker(panel, products);
+        });
 
-        JButton addtocart1 = new JButton("Add to Cart");
-        addtocart1.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-
-        JButton addtocart2 = new JButton("Add to Cart");
-        addtocart2.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-
-        JButton addtowishlist1 = new JButton("Add to Wish List");
-        addtowishlist1.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-
-        JButton addtowishlist2 = new JButton("Add to Wish List");
-        addtowishlist2.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
         JButton nextpage = new JButton("Next Page");
         nextpage.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
+        nextpage.addActionListener(e -> {
+            int maxPage = (products.size()-1) / Page_Products;
+            if (pageNum < maxPage) {
+                pageNum++;
+                pageMaker(panel, products);
+            }
+        });
+
         JButton previouspage = new JButton("Previous Page");
         previouspage.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        previouspage.addActionListener(e -> {
+            if (pageNum > 0) {
+                pageNum--;
+                pageMaker(panel, products);
+            }
+        });
+
+        JPanel topPanel = new JPanel();
+        topPanel.add(msg);
+        topPanel.add(search);
+        topPanel.add(searchButton);
+        frame.add(topPanel, BorderLayout.NORTH);
+
 
         JButton home = new JButton("Return to Home");
         home.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
-        panel.add(Box.createVerticalGlue());
-        panel.add(title);
-        panel.add(Box.createVerticalStrut(30));
-        panel.add(msg);
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(search);
-        panel.add(Box.createVerticalStrut(10));
-        //panel.add(item2);
-        panel.add(item2info);
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(addtocart2);
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(addtowishlist2);
-        panel.add(Box.createVerticalStrut(15));
-        //panel.add(item1);
-        panel.add(item1info);
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(addtocart1);
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(addtowishlist1);
-        panel.add(Box.createVerticalStrut(25));
-        panel.add(nextpage);
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(previouspage);
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(home);
-        panel.add(Box.createVerticalGlue());
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.add(previouspage);
+        bottomPanel.add(nextpage);
+        bottomPanel.add(home);
+        frame.add(bottomPanel, BorderLayout.SOUTH);
+
+
 
         frame.setSize(900, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 }
