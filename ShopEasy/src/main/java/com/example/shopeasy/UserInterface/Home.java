@@ -3,7 +3,7 @@ package com.example.shopeasy.UserInterface;
 import javax.swing.*;
 
 public class Home {
-    public static void main(String[] args) {
+    public Home() {
         JFrame frame = new JFrame("Home Page");
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -56,8 +56,9 @@ public class Home {
         panel.add(emp);
         panel.add(Box.createVerticalGlue());
 
-        frame.setSize(600, 400);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // main window: closing it quits the app
         frame.setVisible(true);
     }
 }

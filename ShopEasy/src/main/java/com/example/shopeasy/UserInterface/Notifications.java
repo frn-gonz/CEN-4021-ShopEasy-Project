@@ -3,7 +3,7 @@ import javax.swing.*;
 import java.awt.Image;
 
 public class Notifications {
-    public static void main(String[] args) {
+    public Notifications() {
         JFrame frame = new JFrame("Notifications");
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -87,8 +87,9 @@ public class Notifications {
         panel.add(home);
         panel.add(Box.createVerticalGlue());
 
-        frame.setSize(900, 600);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
     }
 }

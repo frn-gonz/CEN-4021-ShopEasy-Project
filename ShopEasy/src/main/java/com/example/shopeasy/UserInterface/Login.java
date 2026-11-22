@@ -3,9 +3,9 @@ package com.example.shopeasy.UserInterface;
 import javax.swing.*;
 
 public class Login {
-    public static void main(String[] args){
+    public Login() {
         JFrame frame = new JFrame("ShopEasy Login Page");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // main window: closing it quits the app
         frame.setSize(800,600);
         frame.setTitle("Login Page");
         frame.setLocationRelativeTo(null);

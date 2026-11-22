@@ -3,7 +3,7 @@ import javax.swing.*;
 import java.awt.Image;
 
 public class ShoppingCart {
-    public static void main(String[] args) {
+    public ShoppingCart() {
         JFrame frame = new JFrame("Shopping Cart");
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -72,8 +72,9 @@ public class ShoppingCart {
         panel.add(home);
         panel.add(Box.createVerticalGlue());
 
-        frame.setSize(750, 500);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
     }
 }

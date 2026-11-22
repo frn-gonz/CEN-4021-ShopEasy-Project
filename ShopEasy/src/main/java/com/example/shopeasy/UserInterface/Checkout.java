@@ -2,7 +2,7 @@ package com.example.shopeasy.UserInterface;
 import javax.swing.*;
 
 public class Checkout {
-    public static void main(String[] args) {
+    public Checkout() {
 
         JFrame frame = new JFrame("Checkout");
         JPanel panel = new JPanel();
@@ -58,8 +58,9 @@ public class Checkout {
         panel.add(back);
         panel.add(Box.createVerticalGlue());
 
-        frame.setSize(600, 400);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
     }
 }
