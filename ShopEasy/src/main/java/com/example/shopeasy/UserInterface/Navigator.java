@@ -94,10 +94,6 @@ public class Navigator {
         new AccountPage(accountsRepository, session.getCurrentAccount());
     }
 
-    public void openNotifications() {
-        new Notifications();
-    }
-
     // dispose() closes a window without triggering EXIT_ON_CLOSE
     private void closeAllWindows() {
         for (Window window : Window.getWindows()) {

@@ -111,4 +111,10 @@ public class Account {
     public void setAccountId(Integer id) {
         this.accountId = id;
     }
+    public Boolean getEmployeeStatus() {
+        return employeeStatus;
+    }
+    public void setEmployeeStatus(Boolean employeeStatus) {
+        this.employeeStatus = employeeStatus;
+    }
 }
