@@ -65,6 +65,9 @@ public class ForgotPassword {
             accountsRepository.save(account);
 
             JOptionPane.showMessageDialog(fPassword, "Your password has been reset.");
+
+            fPassword.dispose();
+            new Login(accountsRepository);
         });
 
         fPassword.add(forgot);

@@ -96,6 +96,9 @@ public class SignUp {
                 passBox.setText("");
                 repassBox.setText("");
 
+                signup.dispose();
+                new Login(accountsRepository);
+
             } catch (Exception ex) {
 
                 JOptionPane.showMessageDialog(signup, "Error creating account.");
