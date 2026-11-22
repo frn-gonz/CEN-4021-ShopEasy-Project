@@ -1,5 +1,6 @@
 package com.example.shopeasy.Login;
 
+import com.example.shopeasy.Accounts.Account;
 import com.example.shopeasy.Accounts.AccountsRepository;
 
 import javax.swing.*;
@@ -52,6 +53,56 @@ public class SignUp {
         JButton rbutton = new JButton("Register");
         rbutton.setBounds(300, 400, 100, 30);
 
+        rbutton.addActionListener(e -> {
+
+            String firstName = fname.getText().trim();
+            String lastName = lname.getText().trim();
+            String emailAddress = email.getText().trim();
+            String username = unameBox.getText().trim();
+
+            String password = new String(passBox.getPassword());
+            String confirmPassword = new String(repassBox.getPassword());
+
+            if (firstName.isEmpty()
+                    || lastName.isEmpty()
+                    || emailAddress.isEmpty()
+                    || username.isEmpty()
+                    || password.isEmpty()) {
+
+                JOptionPane.showMessageDialog(signup, "Please fill in all fields."
+                );
+                return;
+            }
+
+            if (!password.equals(confirmPassword)) {
+
+                JOptionPane.showMessageDialog(signup, "Passwords do not match."
+                );
+                return;
+            }
+
+            try {
+
+                Account account = new Account(emailAddress, firstName, lastName, username, password);
+
+                accountsRepository.save(account);
+
+                JOptionPane.showMessageDialog(signup, "Account created successfully!");
+
+                fname.setText("");
+                lname.setText("");
+                email.setText("");
+                unameBox.setText("");
+                passBox.setText("");
+                repassBox.setText("");
+
+            } catch (Exception ex) {
+
+                JOptionPane.showMessageDialog(signup, "Error creating account.");
+
+                ex.printStackTrace();
+            }
+        });
         signup.add(register);
         signup.add(firstname);
         signup.add(fname);
