@@ -1,6 +1,5 @@
-package com.example.shopeasy.UserInterface;
+package com.example.shopeasy.ProductAndInventory;
 import javax.swing.*;
-import java.awt.Image;
 
 public class Inventory {
     public static void main(String[] args) {
