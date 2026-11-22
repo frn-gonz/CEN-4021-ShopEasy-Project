@@ -67,12 +67,6 @@ public class Account {
         this.notificationPreference = true;
     }
 
-    public void setAccountId(Integer id) {
-    }
-
-    public Integer getAccountId() {
-        return accountId;
-    }
 
     public void setPassword(String password) {
         this.password = password;
@@ -82,5 +76,39 @@ public class Account {
         return password;
     }
 
-    // Getters and setters...
+    public String getEmail() {
+        return email;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getPaymentInfo() {
+        return paymentInfo;
+    }
+
+    public void setPaymentInfo(String paymentInfo) {
+        this.paymentInfo = paymentInfo;
+    }
+
+    public String getShippingAddress() {
+        return shippingAddress;
+    }
+
+    public void setShippingAddress(String shippingAddress) {
+        this.shippingAddress = shippingAddress;
+    }
+
+    public Integer getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Integer id) {
+        this.accountId = id;
+    }
 }

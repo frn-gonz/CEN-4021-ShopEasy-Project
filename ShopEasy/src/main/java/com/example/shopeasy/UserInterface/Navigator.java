@@ -1,5 +1,7 @@
 package com.example.shopeasy.UserInterface;
 
+import com.example.shopeasy.Accounts.Account;
+import com.example.shopeasy.Accounts.AccountPage;
 import com.example.shopeasy.Accounts.AccountsRepository;
 import com.example.shopeasy.Accounts.Session;
 import com.example.shopeasy.Login.Login;
@@ -58,7 +60,7 @@ public class Navigator {
     }
 
     // Called by the Login screen once the username and password check out
-    public void logIn(com.example.shopeasy.Accounts.Account account) {
+    public void logIn(Account account) {
         session.setCurrentAccount(account);
         openHome();
     }
@@ -89,7 +91,7 @@ public class Navigator {
     }
 
     public void openAccount() {
-        new Account();
+        new AccountPage(accountsRepository, session.getCurrentAccount());
     }
 
     public void openNotifications() {
