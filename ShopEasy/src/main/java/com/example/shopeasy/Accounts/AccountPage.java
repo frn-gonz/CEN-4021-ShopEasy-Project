@@ -4,6 +4,14 @@ package com.example.shopeasy.Accounts;
 import javax.swing.*;
 
 public class AccountPage {
+    private String hideCardNumber(String cardNumber) {
+        if(cardNumber == null || cardNumber.length() < 4) {
+            return "Not Set";
+        }
+
+        return "************" + cardNumber.substring(cardNumber.length() - 4);
+    }
+
     public AccountPage(AccountsRepository accountsRepository, Account currentAccount) {
 
         JFrame frame = new JFrame("Account");
@@ -26,7 +34,7 @@ public class AccountPage {
         JButton updateaddress = new JButton("Update");
         updateaddress.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
-        JLabel payinfo = new JLabel("Current Card Number: " + currentAccount.getPaymentInfo());
+        JLabel payinfo = new JLabel("Current Card Number: " + hideCardNumber(currentAccount.getPaymentInfo()));
         payinfo.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
         JLabel shipinfo = new JLabel("Current Shipping Address: " + currentAccount.getShippingAddress());
@@ -57,9 +65,21 @@ public class AccountPage {
             currentAccount.setPaymentInfo(newpay);
             accountsRepository.save(currentAccount);
 
-            payinfo.setText("New card number: " + currentAccount.getPaymentInfo());
+            payinfo.setText("New card number: " + hideCardNumber(currentAccount.getPaymentInfo()));
 
             JOptionPane.showMessageDialog(frame, "Payment Info Updated");
+        });
+
+        updateaddress.addActionListener(e -> {
+            String newaddress = shipnew.getText().trim();
+            if (newaddress.equals(null) || newaddress.isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Please enter your shipping address.");
+                return;
+            }
+            currentAccount.setShippingAddress(newaddress);
+            accountsRepository.save(currentAccount);
+            shipinfo.setText("Current Shipping Address: " + currentAccount.getShippingAddress());
+            JOptionPane.showMessageDialog(frame, "Shipping Address Updated");
         });
 
 
