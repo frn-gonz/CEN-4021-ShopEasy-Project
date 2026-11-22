@@ -1,4 +1,4 @@
-package com.example.shopeasy.Login;
+package com.example.shopeasy.UserInterface;
 
 import javax.swing.*;
 
