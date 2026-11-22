@@ -1,8 +1,10 @@
-package com.example.shopeasy.UserInterface;
+package com.example.shopeasy.Accounts;
+
+
 import javax.swing.*;
 
-public class Account {
-    public static void main(String[] args) {
+public class AccountPage {
+    public AccountPage(AccountsRepository accountsRepository, Account currentAccount) {
 
         JFrame frame = new JFrame("Account");
         JPanel panel = new JPanel();
@@ -24,11 +26,14 @@ public class Account {
         JButton updateaddress = new JButton("Update");
         updateaddress.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
-        JLabel payinfo = new JLabel("Current Card Number: XXXX-XXXX-XXXX-XX01"); //Placeholder: Should read card number from account
+        JLabel payinfo = new JLabel("Current Card Number: " + currentAccount.getPaymentInfo());
         payinfo.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
-        JLabel shipinfo = new JLabel("Current Shipping Address: 1234 Sample Dr., Miami, FL"); //Placeholder: Should read address from account
+        JLabel shipinfo = new JLabel("Current Shipping Address: " + currentAccount.getShippingAddress());
         shipinfo.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+
+        JLabel userInfo = new JLabel("Username: " + currentAccount.getUsername());
+        userInfo.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
         JTextField paynew = new JTextField();
         paynew.setMaximumSize(new java.awt.Dimension(200, 60));
@@ -40,6 +45,22 @@ public class Account {
 
         JButton back = new JButton("Return to Home");
         back.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+
+        updatepay.addActionListener(e -> {
+            String newpay = paynew.getText().trim();
+
+            if (newpay.equals(null) || newpay.isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Please enter your payment information.");
+                return;
+            }
+
+            currentAccount.setPaymentInfo(newpay);
+            accountsRepository.save(currentAccount);
+
+            payinfo.setText("New card number: " + currentAccount.getPaymentInfo());
+
+            JOptionPane.showMessageDialog(frame, "Payment Info Updated");
+        });
 
 
         panel.add(Box.createVerticalGlue());
