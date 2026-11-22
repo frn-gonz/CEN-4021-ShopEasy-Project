@@ -13,4 +13,9 @@ final class MoneyFormat {
     static String format(BigDecimal amount) {
         return NumberFormat.getCurrencyInstance(Locale.US).format(amount);
     }
+
+    // Shows a stored rate as a percent, e.g. 0.15 -> "15%"
+    static String percent(BigDecimal fraction) {
+        return fraction.movePointRight(2).stripTrailingZeros().toPlainString() + "%";
+    }
 }
