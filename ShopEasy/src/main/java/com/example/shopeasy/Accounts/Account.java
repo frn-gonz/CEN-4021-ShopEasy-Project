@@ -70,5 +70,16 @@ public class Account {
     public void setAccountId(Integer id) {
     }
 
+    public Integer getAccountId() {
+        return accountId;
+    }
+
+    // Login checks the password here instead of reading it out, so there is no
+    // getPassword() and the /accounts REST endpoint never returns passwords.
+    // An account with a blank password (like the seed accounts) can never match.
+    public boolean passwordMatches(String enteredPassword) {
+        return password != null && !password.isEmpty() && password.equals(enteredPassword);
+    }
+
     // Getters and setters...
 }

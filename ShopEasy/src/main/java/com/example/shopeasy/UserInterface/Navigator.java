@@ -1,6 +1,7 @@
 package com.example.shopeasy.UserInterface;
 
 import com.example.shopeasy.Accounts.AccountsRepository;
+import com.example.shopeasy.Accounts.Session;
 import com.example.shopeasy.Login.SignUp;
 import com.example.shopeasy.ProductAndInventory.Inventory;
 import com.example.shopeasy.ProductAndInventory.ProductsRepository;
@@ -22,21 +23,26 @@ public class Navigator {
 
     private final AccountsRepository accountsRepository;
     private final ProductsRepository productsRepository;
+    private final Session session;
 
-    public Navigator(AccountsRepository accountsRepository, ProductsRepository productsRepository) {
+    public Navigator(AccountsRepository accountsRepository, ProductsRepository productsRepository,
+                     Session session) {
         this.accountsRepository = accountsRepository;
         this.productsRepository = productsRepository;
+        this.session = session;
     }
 
     public void openLogin() {
-        new Login();
+        new Login(this, accountsRepository, session);
     }
 
     public void openSignUp() {
         openClosingOnlyItself(() -> new SignUp(accountsRepository));
     }
 
+    // Home replaces whatever is open (the Login window, and Sign Up if it was left open)
     public void openHome() {
+        closeAllWindows();
         new Home();
     }
 
@@ -62,6 +68,13 @@ public class Navigator {
 
     public void openNotifications() {
         new Notifications();
+    }
+
+    // dispose() closes a window without triggering EXIT_ON_CLOSE
+    private void closeAllWindows() {
+        for (Window window : Window.getWindows()) {
+            window.dispose();
+        }
     }
 
     // SignUp and Inventory set EXIT_ON_CLOSE, which would quit the whole app when closed.

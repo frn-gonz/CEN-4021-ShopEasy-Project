@@ -1,9 +1,14 @@
 package com.example.shopeasy.UserInterface;
 
+import com.example.shopeasy.Accounts.AccountsRepository;
+import com.example.shopeasy.Accounts.Session;
+
 import javax.swing.*;
+import java.awt.event.ActionListener;
+import java.util.Optional;
 
 public class Login {
-    public Login() {
+    public Login(Navigator navigator, AccountsRepository accountsRepository, Session session) {
         JFrame frame = new JFrame("ShopEasy Login Page");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // main window: closing it quits the app
         frame.setSize(800,600);
@@ -31,6 +36,34 @@ public class Login {
         newUser.setBounds(300, 300, 120, 40);
         JButton signupButton = new JButton("here!");
         signupButton.setBounds(420, 300, 80, 40);
+
+        // Runs when "Log in" is clicked or Enter is pressed in the password box
+        ActionListener logIn = e -> {
+            String enteredUsername = login.getText().trim(); // SignUp trims usernames too
+            String enteredPassword = new String(password.getPassword());
+
+            // Blank fields never match, so there is no need to ask the database
+            Optional<com.example.shopeasy.Accounts.Account> account = Optional.empty();
+            if (!enteredUsername.isEmpty() && !enteredPassword.isEmpty()) {
+                account = accountsRepository.findByUsername(enteredUsername).stream()
+                        .filter(match -> match.passwordMatches(enteredPassword))
+                        .findFirst();
+            }
+
+            if (account.isEmpty()) {
+                password.setText("");
+                JOptionPane.showMessageDialog(frame, "Invalid username or password (Error 111)",
+                        "Login Failed", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            session.setCurrentAccount(account.get());
+            navigator.openHome(); // also closes this Login window
+        };
+        signButton.addActionListener(logIn);
+        password.addActionListener(logIn);
+
+        signupButton.addActionListener(e -> navigator.openSignUp());
 
         frame.add(welcome);
         frame.add(username);
