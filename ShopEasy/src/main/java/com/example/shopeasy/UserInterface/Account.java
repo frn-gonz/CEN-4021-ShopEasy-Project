@@ -40,6 +40,7 @@ public class Account {
 
         JButton back = new JButton("Return to Home");
         back.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        back.addActionListener(e -> frame.dispose()); // Home is still open behind this window
 
 
         panel.add(Box.createVerticalGlue());

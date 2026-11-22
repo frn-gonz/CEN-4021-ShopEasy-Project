@@ -32,7 +32,10 @@ public class Navigator {
         this.session = session;
     }
 
+    // Login and Home are the two main windows. Opening one closes everything else:
+    // logging in closes Login (and Sign Up), logging out closes Home and every open screen.
     public void openLogin() {
+        closeAllWindows();
         new Login(this, accountsRepository, session);
     }
 
@@ -40,10 +43,9 @@ public class Navigator {
         openClosingOnlyItself(() -> new SignUp(accountsRepository));
     }
 
-    // Home replaces whatever is open (the Login window, and Sign Up if it was left open)
     public void openHome() {
         closeAllWindows();
-        new Home();
+        new Home(this, session);
     }
 
     public void openInventory() {

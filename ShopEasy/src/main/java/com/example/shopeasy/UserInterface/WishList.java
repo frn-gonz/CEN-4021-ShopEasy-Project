@@ -51,6 +51,7 @@ public class WishList {
 
         JButton home = new JButton("Return to Home");
         home.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        home.addActionListener(e -> frame.dispose()); // Home is still open behind this window
 
         panel.add(Box.createVerticalGlue());
         panel.add(title);
