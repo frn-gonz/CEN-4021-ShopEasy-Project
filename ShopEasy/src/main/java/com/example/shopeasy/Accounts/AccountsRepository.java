@@ -1,12 +1,9 @@
 package com.example.shopeasy.Accounts;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
+import java.util.*;
 
 public interface AccountsRepository extends JpaRepository<Account, Integer> {
-
-    // Returns a List, not an Optional: the database doesn't always enforce unique
-    // usernames (the seed accounts have none), and Optional throws if two rows match.
-    List<Account> findByUsername(String username);
+    Optional<Account> findByUsername(String username);
+    Optional<Account> findByEmail(String email);
 }

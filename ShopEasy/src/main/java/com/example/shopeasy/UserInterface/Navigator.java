@@ -2,7 +2,7 @@ package com.example.shopeasy.UserInterface;
 
 import com.example.shopeasy.Accounts.AccountsRepository;
 import com.example.shopeasy.Accounts.Session;
-import com.example.shopeasy.Login.SignUp;
+import com.example.shopeasy.Login.Login;
 import com.example.shopeasy.ProductAndInventory.Inventory;
 import com.example.shopeasy.ProductAndInventory.ProductsRepository;
 import com.example.shopeasy.Services.CartService;
@@ -24,6 +24,11 @@ import java.util.Set;
 @Component
 public class Navigator {
 
+    // SignUp and ForgotPassword open the Login screen themselves with new Login(accountsRepository),
+    // so Login can't be handed the Navigator in its constructor and uses Navigator.get() instead.
+    // Spring creates exactly one Navigator when the app starts.
+    private static Navigator instance;
+
     private final AccountsRepository accountsRepository;
     private final ProductsRepository productsRepository;
     private final Session session;
@@ -37,17 +42,25 @@ public class Navigator {
         this.session = session;
         this.cartService = cartService;
         this.checkoutService = checkoutService;
+        instance = this;
+    }
+
+    public static Navigator get() {
+        return instance;
     }
 
     // Login and Home are the two main windows. Opening one closes everything else:
-    // logging in closes Login (and Sign Up), logging out closes Home and every open screen.
+    // logging in closes Login, logging out closes Home and every open screen.
+    // (Login opens Sign Up and Forgot Password itself, one window at a time.)
     public void openLogin() {
         closeAllWindows();
-        new Login(this, accountsRepository, session);
+        new Login(accountsRepository);
     }
 
-    public void openSignUp() {
-        openClosingOnlyItself(() -> new SignUp(accountsRepository));
+    // Called by the Login screen once the username and password check out
+    public void logIn(com.example.shopeasy.Accounts.Account account) {
+        session.setCurrentAccount(account);
+        openHome();
     }
 
     public void openHome() {
@@ -90,8 +103,8 @@ public class Navigator {
         }
     }
 
-    // SignUp and Inventory set EXIT_ON_CLOSE, which would quit the whole app when closed.
-    // Those files belong to teammates, so after they open we switch the new window to
+    // Inventory sets EXIT_ON_CLOSE, which would quit the whole app when closed.
+    // That file belongs to a teammate, so after it opens we switch the new window to
     // DISPOSE_ON_CLOSE (closes just that window) and center it like the other screens.
     private void openClosingOnlyItself(Runnable openScreen) {
         Set<Window> alreadyOpen = new HashSet<>(Arrays.asList(Window.getWindows()));
