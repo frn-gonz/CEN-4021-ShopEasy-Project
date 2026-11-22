@@ -70,5 +70,13 @@ public class Account {
     public void setAccountId(Integer id) {
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
     // Getters and setters...
 }
