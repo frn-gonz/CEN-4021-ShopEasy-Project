@@ -3,10 +3,12 @@ package com.example.shopeasy.Accounts;
 import jakarta.persistence.*;
 @Entity
 @Table(name = "accounts")
-public class Account {
+public class Account { //Assigns entity and connects to table name.
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id//Identifies the ID in the database table
+    @GeneratedValue(strategy = GenerationType.IDENTITY)//Notes that ID values are generated
+
+    //Column identifiers for the table fields
     @Column(name = "accountID")
     private Integer accountId;
 
@@ -41,21 +43,19 @@ public class Account {
     private Boolean notificationPreference;
 
     public Account() {
-    }
+    }//Empty account.
 
 
     public String getUsername() {
         return username;
     }
-
+    //Username get and setters
     public void setUsername(String username) {
         this.username = username;
     }
-    public Account(String email,
-                   String firstName,
-                   String lastName,
-                   String username,
-                   String password) {
+
+    //Account constructor with the needed parameters
+    public Account(String email, String firstName, String lastName, String username, String password) {
 
         this.email = email;
         this.firstName = firstName;
@@ -63,51 +63,54 @@ public class Account {
         this.username = username;
         this.password = password;
 
-        this.employeeStatus = false;
-        this.notificationPreference = true;
+        this.employeeStatus = false;//Employee status is false by default
+        this.notificationPreference = true;//Notification preference is true by default.
     }
 
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
+    } //Password setters and getters
     public String getPassword() {
         return password;
     }
 
-    public String getEmail() {
+    public String getEmail() {//Email set and getters
         return email;
     }
-
-    public String getFirstName() {
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    public String getFirstName() {//First and last name setter and getters
         return firstName;
     }
-
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
     public String getLastName() {
         return lastName;
     }
-
-    public String getPaymentInfo() {
-        return paymentInfo;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
+    public String getPaymentInfo() {//Payment info set and getters
+        return paymentInfo;
+    }
     public void setPaymentInfo(String paymentInfo) {
         this.paymentInfo = paymentInfo;
     }
 
+    //Setter and getters for Shipping Address, Account ID, and Employee Status
     public String getShippingAddress() {
         return shippingAddress;
     }
-
     public void setShippingAddress(String shippingAddress) {
         this.shippingAddress = shippingAddress;
     }
-
     public Integer getAccountId() {
         return accountId;
     }
-
     public void setAccountId(Integer id) {
         this.accountId = id;
     }
